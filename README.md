@@ -25,7 +25,7 @@ translates to board position
 
 While a single bitboard can represent which squares are occupied or unoccupied, it can not hold enough information to represent a complete board with different piece types of both sides. The most straightforward way to provide the engine with the necessary information about all the pieces, is by using individual bitboards for each piece type and color, and performing bitwise operations to combine or analyze them as needed.
 
-One bitboard for every piece type of each color with starting positions denoted as hexadecimal (HEX) values:
+Initiating a bitboard for every piece type of each color with starting positions denoted as hexadecimal (HEX) values:
 ```
 U64 bitboards[12];
 
@@ -43,8 +43,21 @@ bitboards[BB] = 0x24ULL; // black bishops
 bitboards[BQ] = 0x8ULL; // black queen
 bitboards[BK] = 0x10ULL; // black king
 ```
+The positional information about pieces is now encapsulated and can be further used 1) to evaluate the current position and 2) to search for best moves. 
 
-By mapping the bitboards to their respective characters, a complete board can now be displayed:
+Example bitboard representation for white's pawns and black's knights:
+```
+8 0  0  0  0  0  0  0  0         8 0  1  0  0  0  0  1  0
+7 0  0  0  0  0  0  0  0         7 0  0  0  0  0  0  0  0
+6 0  0  0  0  0  0  0  0         6 0  0  0  0  0  0  0  0
+5 0  0  0  0  0  0  0  0         5 0  0  0  0  0  0  0  0
+4 0  0  0  0  0  0  0  0         4 0  0  0  0  0  0  0  0
+3 0  0  0  0  0  0  0  0         3 0  0  0  0  0  0  0  0
+2 1  1  1  1  1  1  1  1         2 0  0  0  0  0  0  0  0
+1 0  0  0  0  0  0  0  0         1 0  0  0  0  0  0  0  0
+  A  B  C  D  E  F  G  H           A  B  C  D  E  F  G  H
+```
+By mapping the bitboards to specific characters, a complete board can now be built:
 ```
 8 r  n  b  q  k  b  n  r
 7 p  p  p  p  p  p  p  p
