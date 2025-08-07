@@ -27,21 +27,21 @@ While a single bitboard can represent which squares are occupied or unoccupied, 
 
 One bitboard for every piece type of each color with starting positions denoted as hexadecimal (HEX) values:
 ```
-    U64 bitboards[12];
+U64 bitboards[12];
 
-    bitboards[WP] = 0xff000000000000ULL; // white pawns
-    bitboards[WR] = 0x8100000000000000ULL; // white rooks
-    bitboards[WN] = 0x4200000000000000ULL; // white knights
-    bitboards[WB] = 0x2400000000000000ULL; // white bishops
-    bitboards[WQ] = 0x800000000000000ULL; // white queen
-    bitboards[WK] = 0x1000000000000000ULL; // white king
+bitboards[WP] = 0xff000000000000ULL; // white pawns
+bitboards[WR] = 0x8100000000000000ULL; // white rooks
+bitboards[WN] = 0x4200000000000000ULL; // white knights
+bitboards[WB] = 0x2400000000000000ULL; // white bishops
+bitboards[WQ] = 0x800000000000000ULL; // white queen
+bitboards[WK] = 0x1000000000000000ULL; // white king
 
-    bitboards[BP] = 0xff00ULL; // black pawns
-    bitboards[BR] = 0x81ULL; // black rooks
-    bitboards[BN] = 0x42ULL; // black knights
-    bitboards[BB] = 0x24ULL; // black bishops
-    bitboards[BQ] = 0x8ULL; // black queen
-    bitboards[BK] = 0x10ULL; // black king
+bitboards[BP] = 0xff00ULL; // black pawns
+bitboards[BR] = 0x81ULL; // black rooks
+bitboards[BN] = 0x42ULL; // black knights
+bitboards[BB] = 0x24ULL; // black bishops
+bitboards[BQ] = 0x8ULL; // black queen
+bitboards[BK] = 0x10ULL; // black king
 ```
 
 By mapping the bitboards to their respective characters, a complete board can now be displayed:
