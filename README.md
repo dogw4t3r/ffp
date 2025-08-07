@@ -3,7 +3,7 @@
 A project to document the development of a Chess engine using C.
 
 ## Entries
-### Aug, 7
+### Aug, 7 - Board representation
 Professional chess engines often evaluate billions of positions during a single game. To maximize efficiency, developers have capitalized on the fact that a chessboard has exactly 64 squares — which can be naturally represented using 64-bit integers (such as ```unsigned long long``` in C), with one bit corresponding to each square. In chess programming, these integers are known as *bitboards*.
 
 Since bits are either only 1 or 0, they are perfect for telling if a square is occupied or not. An example:
