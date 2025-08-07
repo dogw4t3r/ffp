@@ -23,7 +23,7 @@ translates to board position
   A  B  C  D  E  F  G  H
 ```
 
-While a single bitboard can represent which squares are occupied or unoccupied, it can not hold enough information to represent a complete board with different piece types of both sides. To differentiate between all the various pieces, the engine must track them separately. The most straightforward way to achieve this is by using individual bitboards for each piece type and color, and performing bitwise operations to combine or analyze them as needed.
+While a single bitboard can represent which squares are occupied or unoccupied, it can not hold enough information to represent a complete board with different piece types of both sides. The most straightforward way to provide the engine with the necessary information about all the pieces, is by using individual bitboards for each piece type and color, and performing bitwise operations to combine or analyze them as needed.
 
 One bitboard for every piece type of each color with starting positions denoted as hexadecimal (HEX) values:
 ```
