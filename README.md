@@ -25,7 +25,7 @@ translates to board position
 
 While a single bitboard can represent which squares are occupied or unoccupied, it does not provide enough information to determine the position of every piece throughout a game. To differentiate between all the various pieces of both players, the engine must track them separately. The most straightforward way to achieve this is by using individual bitboards for each piece type and color, and performing bitwise operations to combine or analyze them as needed.
 
-One bitboard for every piece type of each color with respective starting positions denoted as hexadecimal (HEX) values:
+One bitboard for every piece type of each color with starting positions denoted as hexadecimal (HEX) values:
 ```
     U64 bitboards[12];
 
@@ -42,4 +42,17 @@ One bitboard for every piece type of each color with respective starting positio
     bitboards[BB] = 0x24ULL; // black bishops
     bitboards[BQ] = 0x8ULL; // black queen
     bitboards[BK] = 0x10ULL; // black king
+```
+
+By mapping the bitboards to their respective characters, a complete board can now be displayed:
+```
+8 r  n  b  q  k  b  n  r
+7 p  p  p  p  p  p  p  p
+6 .  .  .  .  .  .  .  .
+5 .  .  .  .  .  .  .  .
+4 .  .  .  .  .  .  .  .
+3 .  .  .  .  .  .  .  .
+2 P  P  P  P  P  P  P  P
+1 R  N  B  Q  K  B  N  R
+  A  B  C  D  E  F  G  H
 ```
