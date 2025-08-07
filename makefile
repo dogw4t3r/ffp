@@ -1,5 +1,5 @@
 all:
-	@gcc -O2 bitboard.c -o bitboard
+	@gcc -O2 dog.c -o dog
 
 debug:
-	@gcc bitboard.c -o bitboard
+	@gcc dog.c -o dog
