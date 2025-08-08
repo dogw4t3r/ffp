@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
 
@@ -36,7 +37,7 @@ char characters[12] = {'P', 'R', 'N', 'B', 'Q', 'K', 'p', 'r', 'n', 'b', 'q', 'k
 //light squares      0x55AA55AA55AA55AA
 //dark squares       0xAA55AA55AA55AA55
 
-// print board, least significant file mapping (LSF)
+// print a given bitboard
 void print_bitboard(U64 bitboard) {
     printf("\n");
     for (int rank = 0; rank < 8; rank++) {
@@ -44,14 +45,16 @@ void print_bitboard(U64 bitboard) {
         for (int file = 0; file < 8; file++) {
             int square = rank * 8 + file;
 
-            printf(" %d ", get_bit(bitboard, square) ? 1 : 0);
+            //printf(" %d ", square); // for bitboard indexes
+            printf(" %d ", get_bit(bitboard, square) ? 1 : 0); // for bitboard bits
         }
         printf("\n");
     }
     printf("  A  B  C  D  E  F  G  H\n\n");
 }
 
-void print_board(U64 bitboards[12]) {
+// print the game board with respective pieces
+void print_board(U64 bitboards[12], uint8_t side) {
     char board[64];
 
     for (int i = 0; i < 64; i++) {
@@ -68,6 +71,7 @@ void print_board(U64 bitboards[12]) {
         }
     }
 
+    printf("\n\n");
     for (int rank = 0; rank < 8; rank++) {
         printf("%d", 8 - rank);
         for (int file = 0; file < 8; file++) {
@@ -76,19 +80,39 @@ void print_board(U64 bitboards[12]) {
         }
         printf("\n");
     }
-    printf("  A  B  C  D  E  F  G  H\n\n");
+    printf("  A  B  C  D  E  F  G  H");
+    printf("\n\n\n");
+    (side) ? printf("White's turn\n") : printf("Black's turn\n");
 }
+
+// the set of occupied squares in a game
+U64 get_occupied(U64 bitboards[12]) {
+    U64 board = 0ULL;
+    for (int bb = 0; bb < 12; bb++) board |= bitboards[bb];
+    return board;
+}
+
+// the set of empty squares in a game
+U64 get_empty_squares(U64 bitboards[12]) {
+    return ~get_occupied(bitboards);
+}
+
+// ATTACKS
+U64 get_pawn_attacks(uint8_t side, uint8_t square) {
+    U64 bitboard = 0ULL;
+
+    return bitboard;
+}
+
 
 int main() {
     U64 bitboards[12];
-
     bitboards[WP] = 0xff000000000000ULL; // white pawns
     bitboards[WR] = 0x8100000000000000ULL; // white rooks
     bitboards[WN] = 0x4200000000000000ULL; // white knights
     bitboards[WB] = 0x2400000000000000ULL; // white bishops
     bitboards[WQ] = 0x800000000000000ULL; // white queen
     bitboards[WK] = 0x1000000000000000ULL; // white king
-
     bitboards[BP] = 0xff00ULL; // black pawns
     bitboards[BR] = 0x81ULL; // black rooks
     bitboards[BN] = 0x42ULL; // black knights
@@ -96,7 +120,9 @@ int main() {
     bitboards[BQ] = 0x8ULL; // black queen
     bitboards[BK] = 0x10ULL; // black king
 
-    print_board(bitboards);
+    uint8_t side = 1; // white = 1, black = 2
+    U64 white_pawn_attacks = get_pawn_attacks(side, d2); // white d2 pawn
+    print_bitboard(white_pawn_attacks);
 
     return 0;
 }
