@@ -3,7 +3,7 @@
 #include <sys/types.h>
 
 // define bitboard data type
-#define U64 unsigned long long
+typedef uint64_t Bitboard;
 
 #define get_bit(bb, sq) (bb & (1ULL << sq))
 #define set_bit(bb, sq) (bb |= (1ULL << sq))
@@ -38,7 +38,7 @@ char characters[12] = {'P', 'R', 'N', 'B', 'Q', 'K', 'p', 'r', 'n', 'b', 'q', 'k
 //dark squares       0xAA55AA55AA55AA55
 
 // print a given bitboard
-void print_bitboard(U64 bitboard) {
+void print_bitboard(Bitboard bitboard) {
     printf("\n");
     for (int rank = 0; rank < 8; rank++) {
         printf("%d", 8 - rank);
@@ -54,7 +54,7 @@ void print_bitboard(U64 bitboard) {
 }
 
 // print the game board with respective pieces
-void print_board(U64 bitboards[12], uint8_t side) {
+void print_board(Bitboard bitboards[12], uint8_t side) {
     char board[64];
 
     for (int i = 0; i < 64; i++) {
@@ -62,7 +62,7 @@ void print_board(U64 bitboards[12], uint8_t side) {
     }
 
     for (int bb = 0; bb < 12; bb++) {
-        U64 bitboard = bitboards[bb];
+        Bitboard bitboard = bitboards[bb];
 
         for (int square = 0; square < 64; square++) {
             if (get_bit(bitboard, square)) {
@@ -86,27 +86,27 @@ void print_board(U64 bitboards[12], uint8_t side) {
 }
 
 // the set of occupied squares in a game
-U64 get_occupied(U64 bitboards[12]) {
-    U64 board = 0ULL;
+Bitboard get_occupied(Bitboard bitboards[12]) {
+    Bitboard board = 0ULL;
     for (int bb = 0; bb < 12; bb++) board |= bitboards[bb];
     return board;
 }
 
 // the set of empty squares in a game
-U64 get_empty_squares(U64 bitboards[12]) {
+Bitboard get_empty_squares(Bitboard bitboards[12]) {
     return ~get_occupied(bitboards);
 }
 
 // ATTACKS
-U64 get_pawn_attacks(uint8_t side, uint8_t square) {
-    U64 bitboard = 0ULL;
+Bitboard get_pawn_attacks(uint8_t side, uint8_t square) {
+    Bitboard bitboard = 0ULL;
 
     return bitboard;
 }
 
 
 int main() {
-    U64 bitboards[12];
+    Bitboard bitboards[12];
     bitboards[WP] = 0xff000000000000ULL; // white pawns
     bitboards[WR] = 0x8100000000000000ULL; // white rooks
     bitboards[WN] = 0x4200000000000000ULL; // white knights
@@ -120,9 +120,8 @@ int main() {
     bitboards[BQ] = 0x8ULL; // black queen
     bitboards[BK] = 0x10ULL; // black king
 
-    uint8_t side = 1; // white = 1, black = 2
-    U64 white_pawn_attacks = get_pawn_attacks(side, d2); // white d2 pawn
-    print_bitboard(white_pawn_attacks);
+    Bitboard board = 0ULL;
+    print_bitboard(bitboards[WP]);
 
     return 0;
 }
