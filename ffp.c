@@ -8,6 +8,14 @@
 
 typedef uint64_t U64;
 
+//a-file             0x0101010101010101
+//h-file             0x8080808080808080
+//1st rank           0x00000000000000FF
+//8th rank           0xFF00000000000000
+//a1-h8 diagonal     0x8040201008040201
+//h1-a8 antidiagonal 0x0102040810204080
+//light squares      0x55AA55AA55AA55AA
+//dark squares       0xAA55AA55AA55AA55
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
     a7, b7, c7, d7, e7, f7, g7, h7,
@@ -26,15 +34,30 @@ enum {
 
 char characters[12] = {'P', 'R', 'N', 'B', 'Q', 'K', 'p', 'r', 'n', 'b', 'q', 'k'};
 
-//a-file             0x0101010101010101
-//h-file             0x8080808080808080
-//1st rank           0x00000000000000FF
-//8th rank           0xFF00000000000000
-//a1-h8 diagonal     0x8040201008040201
-//h1-a8 antidiagonal 0x0102040810204080
-//light squares      0x55AA55AA55AA55AA
-//dark squares       0xAA55AA55AA55AA55
+// https://www.chessprogramming.org/General_Setwise_Operations#ShiftingBitboards
+const U64 avoidWrap[8] =
+{
+   0xfefefefefefefe00, // not a-file and 1st rank
+   0xfefefefefefefefe, // not a-file
+   0x00fefefefefefefe, // not 1st rank
+   0x00ffffffffffffff, // not 8th rank
+   0x007f7f7f7f7f7f7f, // not h-file and 8th rank
+   0x7f7f7f7f7f7f7f7f, // not h-file
+   0x7f7f7f7f7f7f7f00, // not h-file and 1st rank
+   0xffffffffffffff00, // not 1st rank
+};
 
+// SHIFT OPERATIONS
+U64 shift_north(U64 b)      { return b >> 8; }
+U64 shift_south(U64 b)      { return b << 8; }
+U64 shift_east(U64 b)       { return (b << 1) & avoidWrap[1]; }
+U64 shift_north_east(U64 b) { return (b >> 7) & avoidWrap[1]; }
+U64 shift_south_east(U64 b) { return (b << 9) & avoidWrap[1]; }
+U64 shift_west(U64 b)       { return (b >> 1) & avoidWrap[5]; }
+U64 shift_north_west(U64 b) { return (b >> 9) & avoidWrap[5]; }
+U64 shift_south_west(U64 b) { return (b << 7) & avoidWrap[5]; }
+
+// PRINTING HELPER FUNCTIONS
 void print_bitboard(U64 b) {
     printf("\n");
     for (int r = 0; r < 8; r++) {
@@ -80,35 +103,31 @@ void print_board(U64 bitboards[12], uint8_t side) {
     (side) ? printf("White's turn\n") : printf("Black's turn\n");
 }
 
-// the set of occupied squares in a game
-U64 get_occupied(U64 bitboards[12]) {
+// BITBOARD HELPERS
+U64 get_occupied_squares(U64 bitboards[12]) {
     U64 board = 0ULL;
     for (int b=0; b<12; b++) board |= bitboards[b];
     return board;
 }
 
-// the set of empty squares in a game
 U64 get_empty_squares(U64 bitboards[12]) {
-    return ~get_occupied(bitboards);
+    return ~get_occupied_squares(bitboards);
 }
 
-// SHIFT OPERATIONS
-const U64 not_A_file = 0xfefefefefefefefe; // ~0x0101010101010101
-const U64 not_H_file = 0x7f7f7f7f7f7f7f7f; // ~0x8080808080808080
-U64 shift_north(U64 b)      { return b << 8; }
-U64 shift_south(U64 b)      { return b >> 8; }
-U64 shift_east(U64 b)       { return (b >> 1) & not_A_file; }
-U64 shift_north_east(U64 b) { return (b << 7) & not_A_file; }
-U64 shift_south_east(U64 b) { return (b >> 9) & not_A_file; }
-U64 shift_west(U64 b)       { return (b << 1) & not_H_file; }
-U64 shift_north_west(U64 b) { return (b << 9) & not_H_file; }
-U64 shift_south_west(U64 b) { return (b >> 7) & not_H_file; }
+// PAWN MOVE HELPERS
+U64 w_pawns_east_attacks(U64 pawns) { return shift_north_east(pawns); }
+U64 w_pawns_west_attacks(U64 pawns) { return shift_north_west(pawns); }
+U64 b_pawns_east_attacks(U64 pawns) { return shift_south_east(pawns); }
+U64 b_pawns_west_attacks(U64 pawns) { return shift_south_west(pawns); }
+U64 w_pawns_any_attacks(U64 pawns)    { return w_pawns_east_attacks(pawns) | w_pawns_west_attacks(pawns); }
+U64 w_pawns_double_attacks(U64 pawns) { return w_pawns_east_attacks(pawns) & w_pawns_west_attacks(pawns); }
+U64 w_pawns_single_attacks(U64 pawns) { return w_pawns_east_attacks(pawns) ^ w_pawns_west_attacks(pawns); }
+U64 b_pawns_any_attacks(U64 pawns)    { return b_pawns_east_attacks(pawns) | b_pawns_west_attacks(pawns); }
+U64 b_pawns_double_attacks(U64 pawns) { return b_pawns_east_attacks(pawns) & b_pawns_west_attacks(pawns); }
+U64 b_pawns_single_attacks(U64 pawns) { return b_pawns_east_attacks(pawns) ^ b_pawns_west_attacks(pawns); }
 
-// ATTACKS
-U64 get_pawn_attacks(uint8_t side, uint8_t square) {
-    U64 bitboard = 0ULL;
-
-    return bitboard;
+U64 test_function(uint8_t square) {
+    return 0ULL >> square;
 }
 
 int main() {
@@ -125,6 +144,9 @@ int main() {
     bitboards[BB] = 0x24ULL; // black bishops
     bitboards[BQ] = 0x8ULL; // black queen
     bitboards[BK] = 0x10ULL; // black king
+
+    U64 test = test_function(e2);
+    print_bitboard(test);
 
     return 0;
 }
