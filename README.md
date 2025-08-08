@@ -1,30 +1,33 @@
 # DOG - Chess Engine
 
-A project to document the development of a Chess engine using C.
+A far-from-perfect attempt to create a chess engine in C.
 
 ## Entries
 ### Aug, 7 - Board representation
-Professional chess engines often evaluate billions of positions during a single game. To maximize efficiency, developers have capitalized on the fact that a chessboard has exactly 64 squares — which can be naturally represented using 64-bit integers (such as ```unsigned long long``` in C), with one bit corresponding to each square. In chess programming, these integers are known as *bitboards*.
+Engines make many calculations during a game and must therefore be efficient. Decide on how a chessboard and its information should be stored.
+Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards are 64-bit long integers (```unsigned long long``` in C) that 
+can store two states for each of the 64 squares in a chess board. 1 represents a piece and 0 an empty square.
 
-Since bits are either only 1 or 0, they are perfect for storing the state of a given square (occupied = 1, empty = 0). An example:
-
-```unsigned long long board = 0xffff00000000ffffULL```
-
-translates to board position
+```c
+#define U64 unsigned long long
+unsigned long long board = 0ULL
 ```
-8 1  1  1  1  1  1  1  1
-7 1  1  1  1  1  1  1  1
+
+> translates to board position
+```
+8 0  0  0  0  0  0  0  0
+7 0  0  0  0  0  0  0  0
 6 0  0  0  0  0  0  0  0
 5 0  0  0  0  0  0  0  0
 4 0  0  0  0  0  0  0  0
 3 0  0  0  0  0  0  0  0
-2 1  1  1  1  1  1  1  1
-1 1  1  1  1  1  1  1  1
+2 0  0  0  0  0  0  0  0
+1 0  0  0  0  0  0  0  0
   A  B  C  D  E  F  G  H
 ```
 
-Now we can determine which squares are occupied or empty. To represent the current position or to perform needed chess operations, a few more bitboards are required. One bitboard for each type of piece per color (12 in total, 6 for white, 6 for black).
-```
+Now we can determine which squares are occupied or empty. To represent a full chess board, 12 individual bitboards are required. One bitboard for each type of piece per color (12 in total, 6 for white, 6 for black).
+```c
 // Instantiation of bitboards
 // Starting position for each piece type as hexadecimal
 
@@ -46,7 +49,7 @@ bitboards[BK] = 0x10ULL; // black king
 ```
 We can now puzzle together a board. 
 
-Example bitboard representation for white's pawns and black's knights:
+> Bitboard representation of white pawns and black bishops
 ```
 8 0  0  0  0  0  0  0  0         8 0  1  0  0  0  0  1  0
 7 0  0  0  0  0  0  0  0         7 0  0  0  0  0  0  0  0
@@ -58,7 +61,7 @@ Example bitboard representation for white's pawns and black's knights:
 1 0  0  0  0  0  0  0  0         1 0  0  0  0  0  0  0  0
   A  B  C  D  E  F  G  H           A  B  C  D  E  F  G  H
 ```
-By mapping the bitboards to specific characters, a complete board can now be built:
+> Assign one character to each bitboard and combine them to visualize a complete board
 ```
 8 r  n  b  q  k  b  n  r
 7 p  p  p  p  p  p  p  p
