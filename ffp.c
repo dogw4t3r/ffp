@@ -2,14 +2,12 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-// define bitboard data type
-typedef uint64_t Bitboard;
+#define get_bit(b, s) (b & (1ULL << s))
+#define set_bit(b, s) (b |= (1ULL << s))
+#define pop_bit(b, s) ((b) &= ~(1ULL << (s)))
 
-#define get_bit(bb, sq) (bb & (1ULL << sq))
-#define set_bit(bb, sq) (bb |= (1ULL << sq))
-#define pop_bit(bb, sq) ((bb) &= ~(1ULL << (sq)))
+typedef uint64_t U64;
 
-// https://www.chessprogramming.org/Square_Mapping_Considerations
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
     a7, b7, c7, d7, e7, f7, g7, h7,
@@ -37,46 +35,43 @@ char characters[12] = {'P', 'R', 'N', 'B', 'Q', 'K', 'p', 'r', 'n', 'b', 'q', 'k
 //light squares      0x55AA55AA55AA55AA
 //dark squares       0xAA55AA55AA55AA55
 
-// print a given bitboard
-void print_bitboard(Bitboard bitboard) {
+void print_bitboard(U64 b) {
     printf("\n");
-    for (int rank = 0; rank < 8; rank++) {
-        printf("%d", 8 - rank);
-        for (int file = 0; file < 8; file++) {
-            int square = rank * 8 + file;
+    for (int r = 0; r < 8; r++) {
+        printf("%d", 8 - r);
+        for (int f = 0; f < 8; f++) {
+            int s = r * 8 + f;
 
-            //printf(" %d ", square); // for bitboard indexes
-            printf(" %d ", get_bit(bitboard, square) ? 1 : 0); // for bitboard bits
+            printf(" %d ", get_bit(b, s) ? 1 : 0);
         }
         printf("\n");
     }
     printf("  A  B  C  D  E  F  G  H\n\n");
 }
 
-// print the game board with respective pieces
-void print_board(Bitboard bitboards[12], uint8_t side) {
+void print_board(U64 bitboards[12], uint8_t side) {
     char board[64];
 
     for (int i = 0; i < 64; i++) {
         board[i] = '.';
     }
 
-    for (int bb = 0; bb < 12; bb++) {
-        Bitboard bitboard = bitboards[bb];
+    for (int b = 0; b < 12; b++) {
+        U64 bitboard = bitboards[b];
 
-        for (int square = 0; square < 64; square++) {
-            if (get_bit(bitboard, square)) {
-                board[square] = characters[bb];
+        for (int s = 0; s < 64; s++) {
+            if (get_bit(bitboard, s)) {
+                board[s] = characters[b];
             }
         }
     }
 
     printf("\n\n");
-    for (int rank = 0; rank < 8; rank++) {
-        printf("%d", 8 - rank);
-        for (int file = 0; file < 8; file++) {
-            int square = rank * 8 + file;
-            printf(" %c ", board[square]);
+    for (int r = 0; r < 8; r++) {
+        printf("%d", 8 - r);
+        for (int f = 0; f < 8; f++) {
+            int s = r * 8 + f;
+            printf(" %c ", board[s]);
         }
         printf("\n");
     }
@@ -86,27 +81,38 @@ void print_board(Bitboard bitboards[12], uint8_t side) {
 }
 
 // the set of occupied squares in a game
-Bitboard get_occupied(Bitboard bitboards[12]) {
-    Bitboard board = 0ULL;
-    for (int bb = 0; bb < 12; bb++) board |= bitboards[bb];
+U64 get_occupied(U64 bitboards[12]) {
+    U64 board = 0ULL;
+    for (int b=0; b<12; b++) board |= bitboards[b];
     return board;
 }
 
 // the set of empty squares in a game
-Bitboard get_empty_squares(Bitboard bitboards[12]) {
+U64 get_empty_squares(U64 bitboards[12]) {
     return ~get_occupied(bitboards);
 }
 
+// SHIFT OPERATIONS
+const U64 not_A_file = 0xfefefefefefefefe; // ~0x0101010101010101
+const U64 not_H_file = 0x7f7f7f7f7f7f7f7f; // ~0x8080808080808080
+U64 shift_north(U64 b)      { return b << 8; }
+U64 shift_south(U64 b)      { return b >> 8; }
+U64 shift_east(U64 b)       { return (b >> 1) & not_A_file; }
+U64 shift_north_east(U64 b) { return (b << 7) & not_A_file; }
+U64 shift_south_east(U64 b) { return (b >> 9) & not_A_file; }
+U64 shift_west(U64 b)       { return (b << 1) & not_H_file; }
+U64 shift_north_west(U64 b) { return (b << 9) & not_H_file; }
+U64 shift_south_west(U64 b) { return (b >> 7) & not_H_file; }
+
 // ATTACKS
-Bitboard get_pawn_attacks(uint8_t side, uint8_t square) {
-    Bitboard bitboard = 0ULL;
+U64 get_pawn_attacks(uint8_t side, uint8_t square) {
+    U64 bitboard = 0ULL;
 
     return bitboard;
 }
 
-
 int main() {
-    Bitboard bitboards[12];
+    U64 bitboards[12];
     bitboards[WP] = 0xff000000000000ULL; // white pawns
     bitboards[WR] = 0x8100000000000000ULL; // white rooks
     bitboards[WN] = 0x4200000000000000ULL; // white knights
@@ -119,9 +125,6 @@ int main() {
     bitboards[BB] = 0x24ULL; // black bishops
     bitboards[BQ] = 0x8ULL; // black queen
     bitboards[BK] = 0x10ULL; // black king
-
-    Bitboard board = 0ULL;
-    print_bitboard(bitboards[WP]);
 
     return 0;
 }
