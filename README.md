@@ -9,8 +9,8 @@ Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards 
 can store two states for each of the 64 squares in a chess board. 1 represents a piece and 0 an empty square.
 
 ```c
-#define U64 unsigned long long
-unsigned long long board = 0ULL
+#define U64 unsigned long long;
+U64 board = 0ULL;
 ```
 
 > translates to board position
