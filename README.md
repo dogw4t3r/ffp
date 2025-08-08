@@ -5,12 +5,12 @@ A far-from-perfect attempt to create a chess engine in C.
 ## Entries
 ### Aug, 7 - Board representation
 Engines make many calculations during a game and must therefore be efficient. Decide on how a chessboard and its information should be stored.
-Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards are 64-bit long integers (```unsigned long long``` in C) that 
+Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards are 64-bit long integers that 
 can store two states for each of the 64 squares in a chess board. 1 represents a piece and 0 an empty square.
 
 ```c
-#define U64 unsigned long long;
-U64 board = 0ULL;
+typedef uint64_t Bitboard;
+Bitboard board = 0ULL; // unsigned long long literal → already matches uint64_t
 ```
 
 > **0** translates to board position
