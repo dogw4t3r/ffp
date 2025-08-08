@@ -1,4 +1,4 @@
-# DOG - Chess Engine
+# ffp
 
 A far-from-perfect attempt to create a chess engine in C.
 
