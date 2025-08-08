@@ -47,7 +47,7 @@ bitboards[BB] = 0x24ULL; // black bishops
 bitboards[BQ] = 0x8ULL; // black queen
 bitboards[BK] = 0x10ULL; // black king
 ```
-We can now puzzle together a board. 
+We can now put together a board. 
 
 > Bitboard representation of white pawns and black bishops
 ```
