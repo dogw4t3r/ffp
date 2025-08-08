@@ -118,8 +118,13 @@ U64 b_pawns_any_attacks(U64 pawns)    { return b_pawns_east_attacks(pawns) | b_p
 U64 b_pawns_double_attacks(U64 pawns) { return b_pawns_east_attacks(pawns) & b_pawns_west_attacks(pawns); }
 U64 b_pawns_single_attacks(U64 pawns) { return b_pawns_east_attacks(pawns) ^ b_pawns_west_attacks(pawns); }
 
-U64 test_function(uint8_t square) {
-    return 0ULL >> square;
+U64 single_pawn_attack(uint8_t side, uint8_t square) {
+    U64 board = 0ULL;
+    set_bit(board, square);
+    if (side) {
+        return w_pawns_any_attacks(board);
+    }
+    return b_pawns_any_attacks(board);
 }
 
 int main() {
@@ -137,8 +142,11 @@ int main() {
     bitboards[BQ] = 0x8ULL; // black queen
     bitboards[BK] = 0x10ULL; // black king
 
-    U64 test = test_function(e2);
-    print_bitboard(test);
+    U64 white_e2_pawn_attacks = single_pawn_attack(1, e2);
+    print_bitboard(white_e2_pawn_attacks);
+
+    U64 black_f2_pawn_attacks = single_pawn_attack(0, f7);
+    print_bitboard(black_f2_pawn_attacks);
 
     return 0;
 }
