@@ -1,5 +1,5 @@
 all:
-	@gcc -O2 dog.c -o dog
+	@gcc -O2 ffp.c -o ffp
 
 debug:
-	@gcc dog.c -o dog
+	@gcc ffp.c -o ffp
