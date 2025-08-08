@@ -23,10 +23,11 @@ translates to board position
   A  B  C  D  E  F  G  H
 ```
 
-While a single bitboard can represent which squares are occupied or unoccupied, it can not hold enough information to represent a complete board with different piece types of both sides. The most straightforward way to provide the engine with the necessary information about all the pieces, is by using individual bitboards for each piece type and color, and performing bitwise operations to combine or analyze them as needed.
-
-Initiating a bitboard for every piece type of each color with starting positions denoted as hexadecimal (HEX) values:
+Now we can determine which squares are occupied or empty. To represent the current position or to perform needed chess operations, a few more bitboards are required. One bitboard for each type of piece per color (12 in total, 6 for white, 6 for black).
 ```
+// Instantiation of bitboards
+// Starting position for each piece type as hexadecimal
+
 U64 bitboards[12];
 
 bitboards[WP] = 0xff000000000000ULL; // white pawns
@@ -43,7 +44,7 @@ bitboards[BB] = 0x24ULL; // black bishops
 bitboards[BQ] = 0x8ULL; // black queen
 bitboards[BK] = 0x10ULL; // black king
 ```
-The positional information about pieces is now encapsulated and can be further used 1) to evaluate the current position and 2) to search for best moves. 
+We can now puzzle together a board. 
 
 Example bitboard representation for white's pawns and black's knights:
 ```
