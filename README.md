@@ -13,7 +13,7 @@ can store two states for each of the 64 squares in a chess board. 1 represents a
 U64 board = 0ULL;
 ```
 
-> **0ULL** translates to board position
+> **0** translates to board position
 ```
 8 0  0  0  0  0  0  0  0
 7 0  0  0  0  0  0  0  0
