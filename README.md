@@ -31,7 +31,7 @@ Now we can determine which squares are occupied or empty. To represent a full ch
 // Instantiation of bitboards
 // Starting position for each piece type as hexadecimal
 
-U64 bitboards[12];
+Bitboard bitboards[12];
 
 bitboards[WP] = 0xff000000000000ULL; // white pawns
 bitboards[WR] = 0x8100000000000000ULL; // white rooks
