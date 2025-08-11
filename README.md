@@ -76,12 +76,12 @@ We can now put together a board.
 
 <br>
 
-### Aug, 8 - Pawn attacks
-To make move generation possible, the engine needs to know all available moves. For that, it is recommended to generate move-sets for each piece, that store all squares the piece can move to.
-Since pawns can only move forward and not backward, the bitwise operations to calculate white pawns moves and black pawn moves have to be handled seperately.
-or vise versa.
+### Aug, 12 - Mapping piece attacks/moves
+To make move generation possible, the engine needs to know all available moves. It is recommended to generate move-sets for each piece, that store all squares a piece can move to.
+To achieve this, we perform bitwise shifts on our bitboards. The size of the shift depends on how a specific type of piece moves.
+
+> Compass Rose - to visualize bit shifts for one step in any direction
 ```
-// Compass rose to visualize bit shifts
   noWe         nort         noEa
           +7    +8    +9
               \  |  /
@@ -90,4 +90,3 @@ or vise versa.
           -9    -8    -7
   soWe         sout         soEa
 ```
-On a 8x8 bitboard representation of a chess board, bit shifts from the edge files have to be accounted for (a-file to h-file and vise versa). For this, we can create masks
