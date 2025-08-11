@@ -5,11 +5,11 @@ A far-from-perfect attempt to create a chess engine in C.
 ## Entries
 ### Aug, 7 - Board representation
 Engines make many calculations during a game and must therefore be efficient. Decide on how a chessboard and its information should be stored.
-Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards are 64-bit long integers that 
+Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards are 64-bit long integers that
 can store two states for each of the 64 squares in a chess board. 1 represents a piece and 0 an empty square.
 
 ```c
-typedef uint64_t Bitboard;
+typedef uint64_t U64;
 Bitboard board = 0ULL; // unsigned long long literal → already matches uint64_t
 ```
 
@@ -31,7 +31,7 @@ Now we can determine which squares are occupied or empty. To represent a full ch
 // Instantiation of bitboards
 // Starting position for each piece type as hexadecimal
 
-Bitboard bitboards[12];
+U64 bitboards[12];
 
 bitboards[WP] = 0xff000000000000ULL; // white pawns
 bitboards[WR] = 0x8100000000000000ULL; // white rooks
@@ -47,7 +47,7 @@ bitboards[BB] = 0x24ULL; // black bishops
 bitboards[BQ] = 0x8ULL; // black queen
 bitboards[BK] = 0x10ULL; // black king
 ```
-We can now put together a board. 
+We can now put together a board.
 
 > Bitboard representation of white pawns and black bishops
 ```
@@ -73,3 +73,21 @@ We can now put together a board.
 1 R  N  B  Q  K  B  N  R
   A  B  C  D  E  F  G  H
 ```
+
+<br>
+
+### Aug, 8 - Pawn attacks
+To make move generation possible, the engine needs to know all available moves. For that, it is recommended to generate move-sets for each piece, that store all squares the piece can move to.
+Since pawns can only move forward and not backward, the bitwise operations to calculate white pawns moves and black pawn moves have to be handled seperately.
+or vise versa.
+```
+// Compass rose to visualize bit shifts
+  noWe         nort         noEa
+          +7    +8    +9
+              \  |  /
+  west    -1 <-  0 -> +1    east
+              /  |  \
+          -9    -8    -7
+  soWe         sout         soEa
+```
+On a 8x8 bitboard representation of a chess board, bit shifts from the edge files have to be accounted for (a-file to h-file and vise versa). For this, we can create masks
