@@ -1,92 +1,46 @@
 # ffp
 
-A far-from-perfect attempt to create a chess engine in C.
+A far-from-perfect chess engine in C using **bitboards** (a8=bit0 … h1=bit63).  
+Single-file build, legal move generation, FEN loader, perft, a tiny alpha–beta search, and a minimal UCI loop.
 
-## Entries
-### Aug, 7 - Board representation
-Engines make many calculations during a game and must therefore be efficient. Decide on how a chessboard and its information should be stored.
-Arrays quickly come to mind, but *Bitboards* are the better solution. Bitboards are 64-bit long integers that
-can store two states for each of the 64 squares in a chess board. 1 represents a piece and 0 an empty square.
+## Features (current)
 
-```c
-typedef uint64_t U64;
-Bitboard board = 0ULL; // unsigned long long literal → already matches uint64_t
+- **Board & State**
+  - 12 piece bitboards, side to move, castling rights, en-passant square, half/full-move counters
+  - FEN loader (`startpos` supported)
+- **Move Generation**
+  - Knights/Kings via masks; Bishops/Rooks/Queens via blocker-aware rays
+  - Pawns: single/double pushes (through empties), captures, promotions (Q/R/B/N), **en passant**
+  - **Castling** (KQkq): empty path, no through/into check
+  - **Legal** move list (king-in-check filtering)
+- **Search & Eval**
+  - Material-only evaluation
+  - Fixed-depth alpha–beta, mate/stalemate detection
+- **Perft**
+  - Node counts from any position for correctness testing
+- **UCI (minimal)**
+  - `uci`, `isready`, `ucinewgame`, `position startpos|fen … moves …`, `go depth N`, `perft N`, `d`, `quit`
+
+## Quick Start
+
+### Build & run
+```bash
+gcc -O2 -Wall -Wextra -o ffp ffp.c && ./ffp
 ```
-
-> **0** translates to board position
+## Useful Commands
 ```
-8 0  0  0  0  0  0  0  0
-7 0  0  0  0  0  0  0  0
-6 0  0  0  0  0  0  0  0
-5 0  0  0  0  0  0  0  0
-4 0  0  0  0  0  0  0  0
-3 0  0  0  0  0  0  0  0
-2 0  0  0  0  0  0  0  0
-1 0  0  0  0  0  0  0  0
-  A  B  C  D  E  F  G  H
-```
+# Show start position + a sample search (depth 4)
+./ffp
 
-Now we can determine which squares are occupied or empty. To represent a full chess board, 12 individual bitboards are required. One bitboard for each type of piece per color (12 in total, 6 for white, 6 for black).
-```c
-// Instantiation of bitboards
-// Starting position for each piece type as hexadecimal
+# Load a FEN and print the board
+./ffp --fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-U64 bitboards[12];
+# Perft from current/loaded position
+./ffp --perft 4
 
-bitboards[WP] = 0xff000000000000ULL; // white pawns
-bitboards[WR] = 0x8100000000000000ULL; // white rooks
-bitboards[WN] = 0x4200000000000000ULL; // white knights
-bitboards[WB] = 0x2400000000000000ULL; // white bishops
-bitboards[WQ] = 0x800000000000000ULL; // white queen
-bitboards[WK] = 0x1000000000000000ULL; // white king
+# Fixed-depth search (prints best move)
+./ffp --search 5
 
-bitboards[BP] = 0xff00ULL; // black pawns
-bitboards[BR] = 0x81ULL; // black rooks
-bitboards[BN] = 0x42ULL; // black knights
-bitboards[BB] = 0x24ULL; // black bishops
-bitboards[BQ] = 0x8ULL; // black queen
-bitboards[BK] = 0x10ULL; // black king
-```
-We can now put together a board.
-
-> Bitboard representation of white pawns and black bishops
-```
-8 0  0  0  0  0  0  0  0         8 0  1  0  0  0  0  1  0
-7 0  0  0  0  0  0  0  0         7 0  0  0  0  0  0  0  0
-6 0  0  0  0  0  0  0  0         6 0  0  0  0  0  0  0  0
-5 0  0  0  0  0  0  0  0         5 0  0  0  0  0  0  0  0
-4 0  0  0  0  0  0  0  0         4 0  0  0  0  0  0  0  0
-3 0  0  0  0  0  0  0  0         3 0  0  0  0  0  0  0  0
-2 1  1  1  1  1  1  1  1         2 0  0  0  0  0  0  0  0
-1 0  0  0  0  0  0  0  0         1 0  0  0  0  0  0  0  0
-  A  B  C  D  E  F  G  H           A  B  C  D  E  F  G  H
-```
-> Assign one character to each bitboard and combine them to visualize a complete board
-```
-8 r  n  b  q  k  b  n  r
-7 p  p  p  p  p  p  p  p
-6 .  .  .  .  .  .  .  .
-5 .  .  .  .  .  .  .  .
-4 .  .  .  .  .  .  .  .
-3 .  .  .  .  .  .  .  .
-2 P  P  P  P  P  P  P  P
-1 R  N  B  Q  K  B  N  R
-  A  B  C  D  E  F  G  H
-```
-
-<br>
-
-### Aug, 12 - Mapping piece attacks/moves
-To make move generation possible, the engine needs to know all available moves. It is recommended to generate move-sets for each piece, that store all squares a piece can move to.
-To achieve this, we perform bitwise shifts on our bitboards. The size of the shift depends on how a specific type of piece moves.
-
-> Compass Rose - to visualize bit shifts for one step in any direction
-```
-  noWe         nort         noEa
-          +7    +8    +9
-              \  |  /
-  west    -1 <-  0 -> +1    east
-              /  |  \
-          -9    -8    -7
-  soWe         sout         soEa
+# UCI mode for GUIs (Arena, CuteChess, etc.)
+./ffp --uci
 ```

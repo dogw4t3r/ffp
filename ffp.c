@@ -1,4 +1,4 @@
-// ffp.c — Far-From-Perfect chess engine (single file)
+// ffp.c - Far-From-Perfect chess engine (single file)
 // Features: bitboards, FEN loader, pseudo-legal + legal movegen (incl. EP/castling/promotions),
 // make/unmake with undo, perft, simple alpha-beta (material only), minimal UCI loop.
 //
@@ -724,7 +724,7 @@ static void uci_loop(void){
 
 // CLI
 static void usage(void){
-    printf("ffp — single-file chess engine\n");
+    printf("ffp - for-from-perfect chess engine\n");
     printf("Usage:\n");
     printf("  ./ffp                 # show start position and a sample search\n");
     printf("  ./ffp --fen \"<FEN>\" # load FEN and print board\n");
