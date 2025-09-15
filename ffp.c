@@ -727,7 +727,7 @@ static void usage(void){
     printf("ffp — single-file chess engine\n");
     printf("Usage:\n");
     printf("  ./ffp                 # show start position and a sample search\n");
-    printf("  ./ffp --fen \"<FEN>\"   # load FEN and print board\n");
+    printf("  ./ffp --fen \"<FEN>\" # load FEN and print board\n");
     printf("  ./ffp --perft N       # perft to depth N\n");
     printf("  ./ffp --search N      # search depth N and print best move\n");
     printf("  ./ffp --uci           # start minimal UCI loop\n\n");
