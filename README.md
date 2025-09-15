@@ -3,6 +3,8 @@
 A far-from-perfect chess engine in C using **bitboards** (a8=bit0 … h1=bit63).  
 Single-file build, legal move generation, FEN loader, perft, a tiny alpha–beta search, and a minimal UCI loop.
 
+Thanks to https://www.chessprogramming.org/ for being the best resource.
+
 ## Features (current)
 
 - **Board & State**
