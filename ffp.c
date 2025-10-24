@@ -1,9 +1,3 @@
-// ffp.c - Far-From-Perfect chess engine (single file)
-// Features: bitboards, FEN loader, pseudo-legal + legal movegen (incl. EP/castling/promotions),
-// make/unmake with undo, perft, simple alpha-beta (material only), minimal UCI loop.
-//
-// Board indexing: a8 = 0, ..., h8 = 7, a7 = 8, ..., a1 = 56, ..., h1 = 63.
-//
 // Build:  gcc -O2 -Wall -Wextra -o ffp ffp.c
 // Run:    ./ffp --help   |   ./ffp --uci   |   ./ffp --perft 4
 
