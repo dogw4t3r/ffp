@@ -832,15 +832,15 @@ static void print_move(const Move m){
 // UCI loop (minimal)
 static void uci_loop(void){
     char line[4096];
-    Position pos; ffp_position_set_start(&pos);
+    Position pos; set_from_fen(&pos, FFP_FEN_STARTPOS);
     printf("id name ffp\nid author you\nuciok\n"); fflush(stdout);
     while (fgets(line,sizeof(line),stdin)){
         if      (!strncmp(line,"uci",3))      { printf("id name ffp\nid author you\nuciok\n"); fflush(stdout); }
         else if (!strncmp(line,"isready",7))  { printf("readyok\n"); fflush(stdout); }
-        else if (!strncmp(line,"ucinewgame",10)){ ffp_position_set_start(&pos); }
+        else if (!strncmp(line,"ucinewgame",10)){ set_from_fen(&pos, FFP_FEN_STARTPOS); }
         else if (!strncmp(line,"position",8)){
             char *ptr=line+8; while(*ptr==' ') ptr++;
-            if (!strncmp(ptr,"startpos",8)){ ffp_position_set_start(&pos); ptr+=8; }
+            if (!strncmp(ptr,"startpos",8)){ set_from_fen(&pos, FFP_FEN_STARTPOS); ptr+=8; }
             else if (!strncmp(ptr,"fen",3)){
                 ptr+=3; while(*ptr==' ') ptr++;
                 char fen[256]={0}; int fi=0, spaces=0;
@@ -920,7 +920,7 @@ static void usage(void){
 }
 
 int main(int argc,char **argv){
-    Position pos; set_from_fen(&pos, FEN_STARTPOS);
+    Position pos; set_from_fen(&pos, FFP_FEN_STARTPOS);
     if (argc==1){
         ffp_print_board(&pos);
         SearchLimits limits = {.max_depth=4};
