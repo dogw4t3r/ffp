@@ -82,9 +82,6 @@ static inline void update_occupancy(Position *pos){
     pos->occ_all   = pos->occ_white | pos->occ_black;
 }
 
-// Forward declaration for FEN loader
-static bool set_from_fen(Position *pos, const char *fen);
-
 // Attacks (independent)
 static inline U64 king_attacks_from(U64 src){
     U64 a=0; a |= shift_north(src)|shift_south(src)|shift_east(src)|shift_west(src);
@@ -485,7 +482,14 @@ int ffp_generate_legal_array(const Position *pos, Move *moves, int max_moves){
 }
 
 // FEN
-void ffp_position_clear(Position *pos){
+static bool set_from_fen(Position *pos, const char *fen){
+    if (!pos) return false;
+    if (!fen || !*fen) fen = FEN_STARTPOS;
+    return ffp_position_from_fen(pos, fen);
+}
+
+static void position_reset(Position *pos){
+    if (!pos) return;
     memset(pos, 0, sizeof(*pos));
     pos->ep_square=-1;
     pos->halfmove_clock=0;
@@ -494,8 +498,12 @@ void ffp_position_clear(Position *pos){
     pos->castling=0;
 }
 
+void ffp_position_clear(Position *pos){
+    position_reset(pos);
+}
+
 bool ffp_position_from_fen(Position *pos, const char *fen){
-    ffp_position_clear(pos);
+    position_reset(pos);
     int file=0, rank=7;
     const char *p = fen;
 
